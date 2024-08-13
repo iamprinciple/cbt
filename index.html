@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT</title>
+</head>
+<style>
+    #holder{
+        display: none;
+    }
+    #timer{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+</style>
+<body>
+    <button onclick="startQuiz()" id="stQz">Start Quiz</button>
+    <div id="holder">
+        <div id="timer">
+            <h4>Time Remaining: <span  id="time"></span></h4>
+            <button id="submitt" onclick="submitQuiz()">Submit</button>
+        </div>
+        <p id="questionHolder"></p>
+        <ul id="optionsHolder" ></ul>
+        <button id="nxbtn" onclick="nextQues()">Next</button>
+        <button id="prexbtn" onclick="prevQues()">Previous</button>
+    </div>
+    <div id="result"></div>
+</body>
+</html>
+<script>
+    const questions = [
+        {
+            question: "What is the capital of France",
+            options: ["Berlin", "Madrid", "Paris", "Rome"],
+            answer: 2
+        },
+        {
+            question: "What is the capital of Nigeria",
+            options: ["Abuja", "Ibadan", "Rome", "Lagos"],
+            answer: 0
+        },
+        {
+            question: "Pick the odd one out",
+            options: ["Eat", "Feel", "Smell", "Taste"],
+            answer: 0
+        },
+        {
+            question: "Select the odd one",
+            options: ["Shop", "School", "Fast", "Palace"],
+            answer: 2
+        }
+    ]
+
+    let currentQuestion = 0;
+    let score = 0;
+    let timeLeft = 60;
+
+    // const holder = document.getElementById('holder');
+    const time = document.getElementById('time');
+    const questionHolder = document.getElementById('questionHolder');
+    const optionsHolder = document.getElementById('optionsHolder');
+    const nxbtn = document.getElementById('nxbtn');
+    const submitt = document.getElementById('submitt');
+    const result = document.getElementById('result');
+
+    function showQuestions(index) {
+        const myQuiz = questions[index]
+        questionHolder.textContent = `${index + 1}. ${myQuiz.question}`
+        optionsHolder.innerHTML = ''
+
+        myQuiz.options.forEach((option, i) =>{
+            const element = document.createElement('li')
+            element.innerHTML = `<input type= "radio" name= "option" value="${i}">${option}`
+            optionsHolder.appendChild(element)
+        })
+
+        nxbtn.style.display = 'block'
+        submitt.style.display = index === questions.length - 1 ? 'block' : 'none'
+    }
+    showQuestions(currentQuestion)
+
+    function nextQues() {
+        const picked = document.querySelector('input[name="option"]:checked')
+        if (picked) {
+            if (parseInt(picked.value) === questions[currentQuestion].answer) {
+                score++
+            }
+            currentQuestion++
+            if (currentQuestion < questions.length) {
+                showQuestions(currentQuestion)
+            } else{
+                nxbtn.style.display = 'none'
+                submitt.style.display = 'block'
+            }
+        } else{
+            alert("select answer")
+        }
+    } 
+
+    function submitQuiz() {
+        clearInterval(timer)
+        questionHolder.style.display = 'none'
+        optionsHolder.style.display = 'none'
+        nxbtn.style.display = 'none'
+        submitt.style.display = 'none'
+        result.innerHTML = `${score} out of ${questions.length}`
+    }
+
+    function startQuiz() {
+        startTime()
+        holder.style.display = 'block'
+        stQz.style.display = 'none'
+    }
+
+    function startTime() {
+        time.textContent = `${timeLeft}`
+
+        timer = setInterval(() => {
+           timeLeft--
+           time.textContent = `${timeLeft}`
+           
+           if (timeLeft <= 0 ) {
+            clearInterval(timer)
+            submitQuiz()
+           }
+        }, 1000);
+    }
+   
+</script>
